@@ -9,7 +9,6 @@
 ;; http://localhost:8081/inmemory/atom
 ;; user test, password test
 
-(def sessionFactory (SessionFactoryImpl/newInstance))
 (def parameter (new java.util.HashMap))
 
 (. parameter put "hello" "world")
@@ -17,12 +16,19 @@
 (. parameter put SessionParameter/ATOMPUB_URL "http://localhost:8081/inmemory/atom/")
 (. parameter put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
 
-(defn get-repositories [parameter]
-  (. sessionFactory getRepositories parameter))
+(defn session-factory []
+  (SessionFactoryImpl/newInstance))
 
-(defn repository-id [parameter]
-  (. (first (get-repositories parameter)) getId))
+(defn repositories [parameter]
+  (. (session-factory) getRepositories parameter))
 
+(defn repository-id [which parameter]
+  (. (which (repositories parameter)) getId))
+
+
+;; this should be passed in a url, userid, password and returns a session
+;; so we don't create an external hashmap, instead it is created as part of create-session
+;; we can store if or keep it around as needed.
 (defn create-session [parameter]
   )
 ;        Repository repository = repositories.get(0);
