@@ -5,19 +5,24 @@
 (import org.apache.chemistry.opencmis.commons.SessionParameter)
 (import org.apache.chemistry.opencmis.commons.enums.BindingType)
 
-;; need to create a session to connect to:
-;; http://localhost:8081/inmemory/atom
-;; user test, password test
+; Repository Services
+; Navigation Services
+; Object Services
+; Multi-filing Services
+; Discovery Services
+; Versioning Services
+; Relationship Services
+; Policy Services
+; ACL (Access Control List) Services
 
-(def parameter (new java.util.HashMap))
-
-(. parameter put "hello" "world")
-;(. parameter put SessionParameter/ATOMPUB_URL "http://repo.opencmis.org/inmemory/atom/")
-(. parameter put SessionParameter/ATOMPUB_URL "http://localhost:8081/inmemory/atom/")
-(. parameter put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
+(defn create-parameter [url] 
+  (let [param (java.util.HashMap.)]
+    (. param put SessionParameter/ATOMPUB_URL url)
+    (. param put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
+        param))
 
 (defn session-factory []
-  (SessionFactoryImpl/newInstance))
+  (. SessionFactoryImpl newInstance))
 
 (defn repositories [parameter]
   (. (session-factory) getRepositories parameter))
@@ -25,12 +30,59 @@
 (defn repository-id [which parameter]
   (. (which (repositories parameter)) getId))
 
+(defmacro with-tmp-db [& body]
+  `(sql/with-connection {:classname "org.h2.Driver"
+                         :subprotocol "h2"
+                         :subname "mem:"}
+     ~@body))
 
-;; this should be passed in a url, userid, password and returns a session
-;; so we don't create an external hashmap, instead it is created as part of create-session
-;; we can store if or keep it around as needed.
-(defn create-session [parameter]
-  )
+;(. parameter put SessionParameter/ATOMPUB_URL "http://repo.opencmis.org/inmemory/atom/")
+;(. parameter put SessionParameter/ATOMPUB_URL "http://localhost:8081/inmemory/atom/")
+(defn create-session [url]
+  (let [param (create-parameter url)]
+    [sessionFactory (session-factory)]
+  (. param put SessionParameter/REPOSITORY_ID (repository-id first param))
+  (. sessionFactory createSession param)))
+
+(def local-host-session (create-session "http://localhost:8081/inmemory/atom/"))
+
+(defn get-root-folder [session] 
+  (. session getRootFolder))
+
+(defn get-name [cmis-object] 
+  (. cmis-object getName))
+
+(defn get-object-id [cmis-object]
+  (. cmis-object getId))
+
+(defn get-repo-info [session]
+  (. session getRepositoryInfo))
+
+(defn get-repo-caps [session]
+  (. (get-repo-info session) getCapabilities))
+
+; can we do this with a macro
+(defn get-product-name [session] 
+  (. (get-repository-info session) getProductName))
+
+(defn get-product-version [session] 
+  (. (get-repository-info session) getProductVersion))
+
+(map get-object-id (. (get-root-folder local-host-session) getChildren))
+(get-object-id (get-repository-info local-host-session))
+
+(defn get-cmis-version-supported [session] 
+  (. (get-repository-info local-host-session) getCmisVersionSupported))
+
+
+(. (get-repository-info local-host-session) toString)
+
+(. (get-repo-caps local-host-session) getQueryCapability)
+(. (get-repo-caps local-host-session) isGetDescendantsSupported)
+(. (get-repo-caps local-host-session) isGetFolderTreeSupported)
+
+(get-cmis-version-supported local-host-session)
+
 ;        Repository repository = repositories.get(0);
 ;        parameter.put(SessionParameter.REPOSITORY_ID, repository.getId());
 ;        Session session = sessionFactory.createSession(parameter)
