@@ -4,6 +4,7 @@ A Clojure library designed to provide an CMIS Interface.
 
 ## ToDo
 need to do a single call and create a map
+
 need to do all the queries and put them in a map
 
 
