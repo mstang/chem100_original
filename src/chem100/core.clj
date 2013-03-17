@@ -1,4 +1,5 @@
-(ns chem100.core)
+(ns chem100.core
+  (:require [chem100.testcore :as testcore]))
 
 (import '(org.apache.chemistry.opencmis.client.api CmisObject Folder ItemIterable Repository Session SessionFactory))
 (import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl)
