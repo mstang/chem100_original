@@ -5,6 +5,11 @@
 (import org.apache.chemistry.opencmis.commons.SessionParameter)
 (import org.apache.chemistry.opencmis.commons.enums.BindingType)
 
+;  Need a different clojure file for each group of functions
+; so we need a 
+;   repository.clj - repos and session
+;   
+    
 ; Repository Services
 ; Navigation Services
 ; Object Services
@@ -20,6 +25,12 @@
     (. param put SessionParameter/ATOMPUB_URL url)
     (. param put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
         param))
+
+(defn create-folder-props [folder-name]
+  (let [param (java.util.HashMap.)]
+    (. param put "cmis:objectTypeId" "cmis:folder")
+    (. param put "cmis:name" folder-name)
+    param))
 
 (defn session-factory []
   (. SessionFactoryImpl newInstance))
@@ -74,6 +85,8 @@
 (defn get-cmis-version-supported [session] 
   (. (get-repository-info local-host-session) getCmisVersionSupported))
 
+(defn create-folder [parent folder-name]
+  (. parent createFolder (create-folder-props folder-name)))
 
 (. (get-repository-info local-host-session) toString)
 
@@ -82,6 +95,24 @@
 (. (get-repo-caps local-host-session) isGetFolderTreeSupported)
 
 (get-cmis-version-supported local-host-session)
+
+; need to walk the tree of descendants recursively.
+; getDescendants() -
+; getDescentants() -
+; getChildren() -
+; getFolderTree()
+; getFolderParent()
+; getObjectParents()
+
+; cmis:name
+; cmis:objectId
+; cmis:baseTypeId
+; cmis:objectTypeId
+; cmis:createdBy
+; cmis:creationDate
+; cmis:lastModifiedBy
+; cmis:lastModificationDate
+; cmis:changeToken (String)
 
 ;        Repository repository = repositories.get(0);
 ;        parameter.put(SessionParameter.REPOSITORY_ID, repository.getId());
