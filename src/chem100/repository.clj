@@ -1,8 +1,11 @@
 (ns chem100.repository
+  "Repository Services"
   (import org.apache.chemistry.opencmis.client.api.Repository)
   (:require [chem100.session :as session]))
 
-; Repository Services
+; ToDo
+; We need to get all the repo info and caps info and return as maps
+; I think we can use bean
 
 (defn repositories [parameter]
   (. (session/session-factory) getRepositories parameter))
@@ -40,3 +43,14 @@
 ;        Session session = sessionFactory.createSession(parameter)
 ;        System.out.println("Got a connection to repository: " + repository.getName() + ", with id: " + repository.getId());
 
+;(map (memfn toUpperCase) ["a" "short" "message"])
+;The map function applies the function/method toUpperCase to each element in ["a" "short" "message"]
+
+;You can also use the bean function to wrap a Java bean in an immutable Clojure map.
+
+;(bean (new Person "Alexandre" "Martins")) 
+;-> {:firstName "Alexandre", :lastName "Martins"} 
+;Once converted, you can manipulate the new map using any of Clojure’s map functions, like:
+
+;(:firstName (bean (new Person "Alexandre" "Martins"))) 
+;-> Alexandre 

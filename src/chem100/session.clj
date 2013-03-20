@@ -11,22 +11,22 @@
                          :subname "mem:"}
      ~@body))
 
-(defn create-parameter [url] 
-  (let [param (java.util.HashMap.)]
-    (. param put SessionParameter/ATOMPUB_URL url)
-    (. param put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
-        param))
+(defn create-parameter [url userid password] 
+  "Sample URLs \"http://<host>:<port>/cmis/atom\" \"http://repo.opencmis.org/inmemory/atom/\"
+   \"http://localhost:8081/inmemory/atom/\")"
+  (doto (new java.util.HashMap) 
+    (.put SessionParameter/ATOMPUB_URL url)
+    (.put SessionParameter/USER, userid)
+    (.put SessionParameter/PASSWORD, password)
+    (.put SessionParameter/BINDING_TYPE, (. BindingType/ATOMPUB value))))
 
 (defn session-factory []
   (. SessionFactoryImpl newInstance))
 
-;(. parameter put SessionParameter/ATOMPUB_URL "http://repo.opencmis.org/inmemory/atom/")
-;(. parameter put SessionParameter/ATOMPUB_URL "http://localhost:8081/inmemory/atom/")
-
-(defn create-session [url repository-id]
-  (let [param (create-parameter url)]
+(defn create-session [url userid password repository-id]
+  (let [param (create-parameter url userid password)]
   (. param put SessionParameter/REPOSITORY_ID repository-id)
   (. (. SessionFactoryImpl newInstance) createSession param)))
 
-(def local-host-session (create-session "http://localhost:8081/inmemory/atom/" "A1"))
-
+(defn get-object-by-path [session path]
+  (. session getObjectByPath path))

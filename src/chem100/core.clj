@@ -1,19 +1,14 @@
 (ns chem100.core
-  (:require [chem100.testcore :as testcore]))
+  (import org.apache.chemistry.opencmis.client.api.ItemIterable)
+  (:require [chem100.session :as session]
+            [chem100.repository :as repo]
+            [chem100.folder :as folder]
+            [chem100.document :as doc]
+            [chem100.cmisobject :as co]))
+      
+(use '[clojure.string :only (join split)])
 
-(import '(org.apache.chemistry.opencmis.client.api CmisObject Folder ItemIterable Repository Session SessionFactory))
-(import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl)
-(import org.apache.chemistry.opencmis.commons.SessionParameter)
-(import org.apache.chemistry.opencmis.commons.enums.BindingType)
-
-;  Need a different clojure file for each group of functions
-; so we need a 
-;   repository.clj - repos and session
-;   
-    
-; Repository Services
 ; Navigation Services
-; Object Services
 ; Multi-filing Services
 ; Discovery Services
 ; Versioning Services
@@ -21,104 +16,19 @@
 ; Policy Services
 ; ACL (Access Control List) Services
 
-(defn create-parameter [url] 
-  (let [param (java.util.HashMap.)]
-    (. param put SessionParameter/ATOMPUB_URL url)
-    (. param put SessionParameter/BINDING_TYPE (. BindingType/ATOMPUB value))
-        param))
+(def in-mem-session 
+  (session/create-session "http://localhost:8081/inmemory/atom/" "test" "test" "A1"))
 
-(defn create-folder-props [folder-name]
-  (let [param (java.util.HashMap.)]
-    (. param put "cmis:objectTypeId" "cmis:folder")
-    (. param put "cmis:name" folder-name)
-    param))
+(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
+(co/get-object-id (repo/get-repo-info in-mem-session))
 
-(defn session-factory []
-  (. SessionFactoryImpl newInstance))
+(. (repo/get-repo-info in-mem-session) toString)
 
-(defn repositories [parameter]
-  (. (session-factory) getRepositories parameter))
+(. (repo/get-repo-caps in-mem-session) getQueryCapability)
+(. (repo/get-repo-caps in-mem-session) isGetDescendantsSupported)
+(. (repo/get-repo-caps in-mem-session) isGetFolderTreeSupported)
 
-(defn repository-id [which parameter]
-  (. (which (repositories parameter)) getId))
-
-(defmacro with-tmp-db [& body]
-  `(sql/with-connection {:classname "org.h2.Driver"
-                         :subprotocol "h2"
-                         :subname "mem:"}
-     ~@body))
-
-;(. parameter put SessionParameter/ATOMPUB_URL "http://repo.opencmis.org/inmemory/atom/")
-;(. parameter put SessionParameter/ATOMPUB_URL "http://localhost:8081/inmemory/atom/")
-(defn create-session [url]
-  (let [param (create-parameter url)]
-    [sessionFactory (session-factory)]
-  (. param put SessionParameter/REPOSITORY_ID (repository-id first param))
-  (. sessionFactory createSession param)))
-
-(def local-host-session (create-session "http://localhost:8081/inmemory/atom/"))
-
-(defn get-root-folder [session] 
-  (. session getRootFolder))
-
-(defn get-name [cmis-object] 
-  (. cmis-object getName))
-
-(defn get-object-id [cmis-object]
-  (. cmis-object getId))
-
-(defn get-repo-info [session]
-  (. session getRepositoryInfo))
-
-(defn get-repo-caps [session]
-  (. (get-repo-info session) getCapabilities))
-
-; can we do this with a macro
-(defn get-product-name [session] 
-  (. (get-repository-info session) getProductName))
-
-(defn get-product-version [session] 
-  (. (get-repository-info session) getProductVersion))
-
-(map get-object-id (. (get-root-folder local-host-session) getChildren))
-(get-object-id (get-repository-info local-host-session))
-
-(defn get-cmis-version-supported [session] 
-  (. (get-repository-info local-host-session) getCmisVersionSupported))
-
-(defn create-folder [parent folder-name]
-  (. parent createFolder (create-folder-props folder-name)))
-
-(. (get-repository-info local-host-session) toString)
-
-(. (get-repo-caps local-host-session) getQueryCapability)
-(. (get-repo-caps local-host-session) isGetDescendantsSupported)
-(. (get-repo-caps local-host-session) isGetFolderTreeSupported)
-
-(get-cmis-version-supported local-host-session)
-
-; need to walk the tree of descendants recursively.
-; getDescendants() -
-; getDescentants() -
-; getChildren() -
-; getFolderTree()
-; getFolderParent()
-; getObjectParents()
-
-; cmis:name
-; cmis:objectId
-; cmis:baseTypeId
-; cmis:objectTypeId
-; cmis:createdBy
-; cmis:creationDate
-; cmis:lastModifiedBy
-; cmis:lastModificationDate
-; cmis:changeToken (String)
-
-;        Repository repository = repositories.get(0);
-;        parameter.put(SessionParameter.REPOSITORY_ID, repository.getId());
-;        Session session = sessionFactory.createSession(parameter)
-;        System.out.println("Got a connection to repository: " + repository.getName() + ", with id: " + repository.getId());
+(repo/get-cmis-version-supported in-mem-session)
 ;        // Get everything in the root folder and print the names of the objects
 ;        Folder root = session.getRootFolder();
 ;        ItemIterable<CmisObject> children = root.getChildren();
@@ -126,4 +36,31 @@
 ;        for (CmisObject o : children) {
 ;            System.out.println(o.getName());
 ;        }
+(bean (repo/get-repo-info in-mem-session))
+(:capabilities (bean (repo/get-repo-info in-mem-session)))
+(bean (repo/get-repo-caps in-mem-session))
 
+; we need to be able to write a recursive descent for processing folders
+
+(map co/get-properties (. (folder/get-root-folder in-mem-session) getChildren))
+
+(map println (co/get-properties (last (. (folder/get-root-folder in-mem-session) getChildren))))
+
+(count (co/get-properties (last (. (folder/get-root-folder in-mem-session) getChildren))))
+(bean (last (. (folder/get-root-folder in-mem-session) getChildren)))
+
+(count (last (split "org.apache.chemistry.opencmis.client.runtime.DocumentImpl" #"\.")))
+
+(split "root:*:0:0:admin:/var/root:/bin/sh" #"\.")
+
+(defn find-class-name [package]
+  (last (split (str package) #"\.")))
+
+(map find-class-name (supers org.apache.chemistry.opencmis.client.runtime.FolderImpl))
+
+
+(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
+(map get-object-id (. (get-root-folder in-mem-session) getChildren))
+(folder/create-folder (get-root-folder in-mem-session) "My Test Folder")
+(doc/create-document (get-root-folder in-mem-session) "My Test Document")
+(session/get-object-by-path in-mem-session "/My Test Folder")
