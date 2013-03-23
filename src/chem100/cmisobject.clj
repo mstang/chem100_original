@@ -12,6 +12,7 @@
   (. cmis-object getBaseTypeId))
 
 (defn get-object-type-id [cmis-object]
+  "Doesn't seem to work on Folders"
   (. cmis-object getObjectTypeId))
 
 (defn get-created-by [cmis-object]

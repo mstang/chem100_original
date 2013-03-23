@@ -1,11 +1,13 @@
-(ns chem100.session)
+(ns chem100.session
+  (:require [chem100.document :as doc]
+            [chem100.cmisobject :as co]))
 
-(import '(org.apache.chemistry.opencmis.client.api Session SessionFactory))
-(import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl)
-(import org.apache.chemistry.opencmis.commons.SessionParameter)
-(import org.apache.chemistry.opencmis.commons.enums.BindingType)
+  (import '(org.apache.chemistry.opencmis.client.api Session SessionFactory))
+  (import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl)
+  (import org.apache.chemistry.opencmis.commons.SessionParameter)
+  (import org.apache.chemistry.opencmis.commons.enums.BindingType)
 
-(defmacro with-tmp-db [& body]
+(defmacro with-session [& body]
   `(sql/with-connection {:classname "org.h2.Driver"
                          :subprotocol "h2"
                          :subname "mem:"}
@@ -30,3 +32,11 @@
 
 (defn get-object-by-path [session path]
   (. session getObjectByPath path))
+
+(defn get-object-factory [session]
+  (. session getObjectFactory))
+
+(defn create-content-stream [session filename mimetype]
+  (let [file (doc/create-file filename)
+    fis (doc/create-file-input-stream file)]
+    (. (get-object-factory session) createContentStream (. file getName) (. file length) mimetype fis)))

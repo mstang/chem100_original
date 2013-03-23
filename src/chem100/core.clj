@@ -8,6 +8,8 @@
       
 (use '[clojure.string :only (join split)])
 
+; ToDo - CMIS Scripts as examples and CMIS.groovy
+
 ; Navigation Services
 ; Multi-filing Services
 ; Discovery Services
@@ -58,9 +60,35 @@
 
 (map find-class-name (supers org.apache.chemistry.opencmis.client.runtime.FolderImpl))
 
-
 (map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
-(map get-object-id (. (get-root-folder in-mem-session) getChildren))
-(folder/create-folder (get-root-folder in-mem-session) "My Test Folder")
-(doc/create-document (get-root-folder in-mem-session) "My Test Document")
-(session/get-object-by-path in-mem-session "/My Test Folder")
+(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
+;(folder/create-folder (folder/get-root-folder in-mem-session) "My Test Folder")
+;(doc/create-document (folder/get-root-folder in-mem-session) "My Test Document")
+;(session/get-object-by-path in-mem-session "/My Test Folder")
+
+;(. (new java.io.File "./purchase_order1.pdf") getName)
+
+;(co/get-base-type-id
+; (session/get-object-by-path in-mem-session "/My Test Folder/purchase_order1"))
+
+;(doc/create-document 
+; (session/get-object-by-path in-mem-session "/My Test Folder")
+; "purchase_order1"
+; (session/create-content-stream in-mem-session "./purchase_order1.pdf" "application/pdf")))
+
+(defn get-definition [prop]
+  (. prop getDefinition))
+
+(defn get-display-name [prop]
+  (. prop getDisplayName))
+
+(defn get-value [prop]
+  (. prop getValue))
+
+(defn get-id [prop]
+  (. prop getId))
+
+(let [root-folder (folder/get-root-folder in-mem-session)
+      ]
+  (map get-id (. root-folder getProperties)))
+

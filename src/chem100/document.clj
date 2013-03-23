@@ -22,7 +22,15 @@
     (.put "cmis:objectTypeId" "cmis:document")
     (.put "cmis:name" folder-name)))
 
-(defn create-document [folder doc-name]
-  (. folder createDocument (create-doc-props doc-name) nil nil))
+(defn create-document 
+  ([folder doc-name]
+     (. folder createDocument (create-doc-props doc-name) nil nil))
+  ([folder doc-name content-stream]
+     (. folder createDocument (create-doc-props doc-name) content-stream nil)))
 
+(defn create-file [path]
+   (new java.io.File path))
+
+(defn create-file-input-stream [file]
+  (new java.io.FileInputStream file))
 
