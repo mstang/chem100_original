@@ -17,8 +17,10 @@
 (defn get-property-by-query-name [result]
   (. (. result getPropertyByQueryName "cmis:name") getFirstValue))
 
-(let [qr (query in-mem-session false "select cmisbook:author from cmisbook:lyrics")]
+(let [qr (query in-mem-session false "select cmis:name, cmisbook:author from cmisbook:lyrics")]
   (map get-property-by-query-name (take 5 qr)))
 
 (let [qr (query in-mem-session false "select cmis:name from cmisbook:lyrics")]
   (map get-property-by-query-name qr))
+
+;(defn test-fn [])

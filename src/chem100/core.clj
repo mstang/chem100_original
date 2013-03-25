@@ -16,6 +16,7 @@
 ; Versioning Services
 ; Relationship Services
 ; Policy Services
+
 ; ACL (Access Control List) Services
 
 (def in-mem-session 
@@ -91,4 +92,12 @@
 (let [root-folder (folder/get-root-folder in-mem-session)
       ]
   (map get-id (. root-folder getProperties)))
+
+;;#(Foo. %)
+;; #(. % getDisplayName)
+
+(let [root-folder (folder/get-root-folder in-mem-session)
+      ]
+  (sort (map #(. % getDisplayName) (. root-folder getProperties))))
+
 
