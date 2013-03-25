@@ -77,27 +77,5 @@
 ; "purchase_order1"
 ; (session/create-content-stream in-mem-session "./purchase_order1.pdf" "application/pdf")))
 
-(defn get-definition [prop]
-  (. prop getDefinition))
-
-(defn get-display-name [prop]
-  (. prop getDisplayName))
-
-(defn get-value [prop]
-  (. prop getValue))
-
-(defn get-id [prop]
-  (. prop getId))
-
-(let [root-folder (folder/get-root-folder in-mem-session)
-      ]
-  (map get-id (. root-folder getProperties)))
-
-;;#(Foo. %)
-;; #(. % getDisplayName)
-
-(let [root-folder (folder/get-root-folder in-mem-session)
-      ]
-  (sort (map #(. % getDisplayName) (. root-folder getProperties))))
 
 
