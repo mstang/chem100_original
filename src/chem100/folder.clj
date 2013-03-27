@@ -20,3 +20,12 @@
 (defn create-folder [parent folder-name]
   (. parent createFolder (create-folder-props folder-name)))
 
+
+;(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
+;(map co/get-properties (. (folder/get-root-folder in-mem-session) getChildren))
+
+;(map find-class-name (supers org.apache.chemistry.opencmis.client.runtime.FolderImpl))
+
+
+
+

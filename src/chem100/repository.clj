@@ -35,6 +35,9 @@
 ;(. (get-repo-caps local-host-session) getQueryCapability)
 ;(. (get-repo-caps local-host-session) isGetDescendantsSupported)
 ;(. (get-repo-caps local-host-session) isGetFolderTreeSupported)
+;(co/get-object-id (repo/get-repo-info in-mem-session))
+;(repo/get-cmis-version-supported in-mem-session)
+
 
 ;(get-cmis-version-supported local-host-session)
 
@@ -54,3 +57,9 @@
 
 ;(:firstName (bean (new Person "Alexandre" "Martins"))) 
 ;-> Alexandre 
+
+;(bean (repo/get-repo-info in-mem-session))
+;(:capabilities (bean (repo/get-repo-info in-mem-session)))
+;(bean (repo/get-repo-caps in-mem-session))
+
+
