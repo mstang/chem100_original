@@ -20,7 +20,7 @@
 (def in-mem-session 
   (session/create-session "http://localhost:8081/inmemory/atom/" "test" "test" "A1"))
 
-;        // Get everything in the root folder and print the names of the objects
+; // Get everything in the root folder and print the names of the objects
 ;        Folder root = session.getRootFolder();
 ;        ItemIterable<CmisObject> children = root.getChildren();
 ;        System.out.println("Found the following objects in the root folder:-");
