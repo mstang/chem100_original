@@ -6,4 +6,5 @@
   :dependencies [
                  [org.clojure/clojure "1.4.0"]
                  [org.apache.chemistry.opencmis/chemistry-opencmis-client-impl "0.8.0"]
+                 [org.clojure/core.logic "0.8.3"]                 
                  ])

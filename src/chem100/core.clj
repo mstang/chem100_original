@@ -1,11 +1,13 @@
 (ns chem100.core
   (import org.apache.chemistry.opencmis.client.api.ItemIterable)
+  (:refer-clojure :exclude [==])
+  (:use [clojure.core.logic]) 
   (:require [chem100.session :as session]
             [chem100.repository :as repo]
             [chem100.folder :as folder]
             [chem100.document :as doc]
             [chem100.cmisobject :as co]))
-      
+     
 (use '[clojure.string :only (join split)])
 
 ; ToDo - CMIS Scripts as examples and CMIS.groovy
@@ -52,5 +54,11 @@
 ; "purchase_order1"
 ; (session/create-content-stream in-mem-session "./purchase_order1.pdf" "application/pdf")))
 
+(defn looprecur_fibonacci [n]
+  (loop [first 0 second 1 iter 0]
+    (if (= iter n)
+      first
+      (recur second (+ first second) (inc iter)))))
 
-
+(run* [q]
+      (== q 3))
