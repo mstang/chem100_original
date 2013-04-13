@@ -40,6 +40,8 @@
 
 (map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
 
+(. (folder/get-root-folder in-mem-session) getChildren)
+
 ;(folder/create-folder (folder/get-root-folder in-mem-session) "My Test Folder")
 ;(doc/create-document (folder/get-root-folder in-mem-session) "My Test Document")
 ;(session/get-object-by-path in-mem-session "/My Test Folder")
@@ -62,3 +64,15 @@
 
 (run* [q]
       (== q 3))
+
+(folder/get-children
+(session/get-object in-mem-session "101" (folder/create-folder-context in-mem-session)))
+
+(session/set-max-items-per-page! 
+ (session/set-order-by! (session/create-operation-context in-mem-session) "cmis:name")
+ 10)
+
+
+;(folder/create-folder-context in-mem-session)
+
+

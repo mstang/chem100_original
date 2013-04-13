@@ -30,11 +30,34 @@
   (. param put SessionParameter/REPOSITORY_ID repository-id)
   (. (. SessionFactoryImpl newInstance) createSession param)))
 
+(defn get-object-factory [session]
+  (. session getObjectFactory))
+
 (defn get-object-by-path [session path]
   (. session getObjectByPath path))
 
-(defn get-object-factory [session]
-  (. session getObjectFactory))
+(defn get-object 
+  ([session id]
+     (. session getObject id))
+  ([session id context]
+     (. session getObject id context)))
+
+(defn create-operation-context [session]
+  (. session createOperationContext))
+
+(defn get-default-context [session]
+  (. session getDefaultContext))
+
+(defn set-default-context! [session context]
+  (. session setDefaultContext context))
+
+(defn set-max-items-per-page! [context count]
+  (doto context
+    (.setMaxItemsPerPage count)))
+
+(defn set-order-by! [context value]
+  (doto context
+    (.setOrderBy value)))
 
 (defn create-content-stream [session filename mimetype]
   (let [file (doc/create-file filename)

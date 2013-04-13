@@ -30,3 +30,5 @@
 (defn get-properties [cmis-object]
   (. cmis-object getProperties))
 
+
+

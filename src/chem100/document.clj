@@ -34,3 +34,16 @@
 (defn create-file-input-stream [file]
   (new java.io.FileInputStream file))
 
+(defn create-document-context [session]
+  (doto (session/create-operation-context session)
+    (.setFilterString "cmis:objectId, cmis:baseTypeId, cmis:name, cmis:contentStreamLength, cmis:contentStreamMimeType")
+    (.setIncludeAcls false)
+    (.setIncludeAllowableActions true)
+    (.setIncludePolicies false)
+    (.setIncludeRelationships IncludeRelationships/NONE)
+    (.setRenditionFilterString "cmis:none")
+    (.setIncludePathSegments false)
+    (.setOrderBy "cmis:name")
+    (.setCacheEnabled false)
+    (.setMaxItemsPerPage 10)))
+

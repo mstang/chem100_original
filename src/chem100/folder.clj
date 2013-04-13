@@ -1,5 +1,8 @@
 (ns chem100.folder
-  (import org.apache.chemistry.opencmis.client.api.Folder))
+  (import org.apache.chemistry.opencmis.client.api.Folder)
+  (:require [chem100.session :as session]))
+
+(import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships)
 
 ; need to walk the tree of descendants recursively.
 ; getChildren() - gets just the direct containees in a folder
@@ -20,12 +23,26 @@
 (defn create-folder [parent folder-name]
   (. parent createFolder (create-folder-props folder-name)))
 
+(defn create-folder-context [session]
+  (doto (session/create-operation-context session)
+    (.setFilterString "cmis:name, cmis:path")
+    (.setIncludeAcls false)
+    (.setIncludeAllowableActions false)
+    (.setIncludePolicies false)
+    (.setIncludeRelationships IncludeRelationships/NONE)
+    (.setRenditionFilterString "cmis:none")
+    (.setIncludePathSegments false)
+    (.setOrderBy nil)
+    (.setCacheEnabled true)))
+
+(defn get-children 
+  ([folder]
+     (doto folder .getChildren))
+  ([folder context]
+     (doto folder .getChildren context)))
 
 ;(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
 ;(map co/get-properties (. (folder/get-root-folder in-mem-session) getChildren))
 
 ;(map find-class-name (supers org.apache.chemistry.opencmis.client.runtime.FolderImpl))
-
-
-
 
