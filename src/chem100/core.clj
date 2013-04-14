@@ -79,27 +79,44 @@
  2
  3) ))
 
-;(co/get-name )
-;(first  )
-;(empty? )
+(defn get-children-for-id [id]
+  (seq  (folder/get-children
+         (session/get-object in-mem-session id (folder/create-folder-context in-mem-session)))))
 
-;(loop    )
-(def my-list (folder/get-children  (session/get-object in-mem-session "100" (folder/create-folder-context in-mem-session))))
+(defn process-print-list [a-list]
+  (cond 
+   (empty? a-list)
+   'false
+   (list? a-list)
+   (let [a a-list]
+     (println (first a))
+     (process-print-list (rest a)))
+   :else
+   (process-print-list (rest a-list))))
 
-(defn process-print-list 
-  ( [a-list]
-    (cond (empty? a-list) 
-          'false 
-          (list? a-list) 
-          (let [a a-list] (println (first a)) (process-print-list (rest a) ))
-          :else (process-print-list (rest a-list) ))))
+(defn process-my-list [list]
+  (if (not (empty? list))
+    (let [first (first list)]
+      (println (co/get-name first))
+      (process-print-my-list (rest list)))
+    ))
+(process-my-list (get-children-for-id "100"))
 
-(defn process-print-my-list [list]
-  (if (empty? list)
-   (println "done")
-   (let [first (first list)]
-     (println (co/get-name first))
-     (process-print-my-list (rest list)))
-  ))
+(defn my-print [item]
+  (println (co/get-name item)))
 
-(process-print-my-list my-list)
+(defn process-list [a-list]
+  (loop [loop-list a-list]
+    (if (empty? loop-list)
+      (println "done")
+      (let [item (first loop-list)]
+        (println (co/get-name item))
+        (recur (rest loop-list))))))
+
+(process-list (get-children-for-id "100"))
+
+;(my-print (session/get-object in-mem-session "100"))
+;(count  (map co/get-name (get-children-for-id "100")))
+;(map co/get-name (get-children-for-id "100"))
+
+

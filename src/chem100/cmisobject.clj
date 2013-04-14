@@ -2,8 +2,10 @@
   "Object Services"
   (import org.apache.chemistry.opencmis.client.api.CmisObject))
 
-(defn get-name [cmis-object] 
-  (. cmis-object getName))
+(defn get-name [cmis-object]
+  (let [name  (. cmis-object getName)]
+    name)
+ )
 
 (defn get-object-id [cmis-object]
   (. cmis-object getId))
