@@ -65,9 +65,6 @@
 (run* [q]
       (== q 3))
 
-(folder/get-children
-(session/get-object in-mem-session "101" (folder/create-folder-context in-mem-session)))
-
 (session/set-max-items-per-page! 
  (session/set-order-by! (session/create-operation-context in-mem-session) "cmis:name")
  10)
@@ -75,4 +72,34 @@
 
 ;(folder/create-folder-context in-mem-session)
 
+(co/get-name (first 
+(folder/get-page 
+ (folder/get-children
+  (session/get-object in-mem-session "100" (folder/create-folder-context in-mem-session)))
+ 2
+ 3) ))
 
+;(co/get-name )
+;(first  )
+;(empty? )
+
+;(loop    )
+(def my-list (folder/get-children  (session/get-object in-mem-session "100" (folder/create-folder-context in-mem-session))))
+
+(defn process-print-list 
+  ( [a-list]
+    (cond (empty? a-list) 
+          'false 
+          (list? a-list) 
+          (let [a a-list] (println (first a)) (process-print-list (rest a) ))
+          :else (process-print-list (rest a-list) ))))
+
+(defn process-print-my-list [list]
+  (if (empty? list)
+   (println "done")
+   (let [first (first list)]
+     (println (co/get-name first))
+     (process-print-my-list (rest list)))
+  ))
+
+(process-print-my-list my-list)

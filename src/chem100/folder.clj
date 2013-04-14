@@ -37,9 +37,12 @@
 
 (defn get-children 
   ([folder]
-     (doto folder .getChildren))
+     (. folder getChildren))
   ([folder context]
-     (doto folder .getChildren context)))
+     (. folder getChildren context)))
+
+(defn get-page [children skip size]
+  (. (. children skipTo skip) getPage size ) )
 
 ;(map co/get-object-id (. (folder/get-root-folder in-mem-session) getChildren))
 ;(map co/get-properties (. (folder/get-root-folder in-mem-session) getChildren))
