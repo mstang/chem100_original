@@ -80,7 +80,7 @@
  3) ))
 
 (defn get-children-for-id [id]
-  (seq  (folder/get-children
+  (lazy-seq  (folder/get-children
          (session/get-object in-mem-session id (folder/create-folder-context in-mem-session)))))
 
 (defn process-print-list [a-list]
@@ -105,15 +105,15 @@
 (defn my-print [item]
   (println (co/get-name item)))
 
-(defn process-list [a-list]
+(defn process-list [func a-list]
   (loop [loop-list a-list]
     (if (empty? loop-list)
       (println "done")
       (let [item (first loop-list)]
-        (println (co/get-name item))
+        (println (func item))
         (recur (rest loop-list))))))
 
-(process-list (get-children-for-id "100"))
+(process-list co/get-object-id (get-children-for-id "100"))
 
 ;(my-print (session/get-object in-mem-session "100"))
 ;(count  (map co/get-name (get-children-for-id "100")))
