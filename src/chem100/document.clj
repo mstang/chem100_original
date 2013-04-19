@@ -1,5 +1,7 @@
 (ns chem100.document
-  (import org.apache.chemistry.opencmis.client.api.Folder))
+  (import org.apache.chemistry.opencmis.client.api.Folder)
+  (import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships)
+  (:require [chem100.session :as session]))
       
 ;cmis:isImmutable - Boolean
 ;cmis:isLatestVersion - Boolean
@@ -34,7 +36,19 @@
 (defn create-file-input-stream [file]
   (new java.io.FileInputStream file))
 
-(defn create-document-context [session]
+(defn content? [document]
+  (>= (. document getContentStreamLength) 0))
+
+;; this should be a let
+(defn get-content [document]
+  (list 
+   (doto (. document getContentStream)
+     (.getStream)
+     (.getFileName)
+     (.getMimeType)
+     (.getLength))))
+
+(defn create-document-context-content [session]
   (doto (session/create-operation-context session)
     (.setFilterString "cmis:objectId, cmis:baseTypeId, cmis:name, cmis:contentStreamLength, cmis:contentStreamMimeType")
     (.setIncludeAcls false)
@@ -46,4 +60,16 @@
     (.setOrderBy "cmis:name")
     (.setCacheEnabled false)
     (.setMaxItemsPerPage 10)))
+
+(defn create-document-context-thumbnail [session]
+  (doto (session/create-operation-context session)
+    (.setFilterString "*")
+    (.setIncludeAcls false)
+    (.setIncludeAllowableActions true)
+    (.setIncludePolicies false)
+    (.setIncludeRelationships IncludeRelationships/NONE)
+    (.setRenditionFilterString "cmis:thumbnail")
+    (.setIncludePathSegments false)
+    (.setOrderBy nil)
+    (.setCacheEnabled true)))
 

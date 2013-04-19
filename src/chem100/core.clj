@@ -1,5 +1,7 @@
 (ns chem100.core
   (import org.apache.chemistry.opencmis.client.api.ItemIterable)
+  (import org.apache.chemistry.opencmis.client.api.Folder)
+  (import org.apache.chemistry.opencmis.client.api.Document)
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic]) 
   (:require [chem100.session :as session]
@@ -80,8 +82,8 @@
  3) ))
 
 (defn get-children-for-id [id]
-  (lazy-seq  (folder/get-children
-         (session/get-object in-mem-session id (folder/create-folder-context in-mem-session)))))
+  (lazy-seq (folder/get-children
+             (session/get-object in-mem-session id (folder/create-folder-context in-mem-session)))))
 
 (defn process-print-list [a-list]
   (cond 
@@ -110,13 +112,23 @@
     (if (empty? loop-list)
       (println "done")
       (let [item (first loop-list)]
-        (println (func item))
+        (func item)
         (recur (rest loop-list))))))
 
-(process-list co/get-object-id (get-children-for-id "100"))
+(process-list my-print (get-children-for-id "100"))
 
 ;(my-print (session/get-object in-mem-session "100"))
 ;(count  (map co/get-name (get-children-for-id "100")))
 ;(map co/get-name (get-children-for-id "100"))
 
+(co/get-name  (first  (folder/get-parents  (session/get-object in-mem-session "101"))))
 
+(first  (folder/get-parents  (session/get-object in-mem-session "100")))
+
+(instance? Document (session/get-object in-mem-session "310"))
+(instance? Folder (session/get-object in-mem-session "100"))
+
+(. (session/get-object in-mem-session "310") getContentStreamLength)
+
+(doc/content? (session/get-object in-mem-session "310"))
+(doc/get-content (session/get-object in-mem-session "310"))
