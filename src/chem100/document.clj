@@ -39,14 +39,16 @@
 (defn content? [document]
   (>= (. document getContentStreamLength) 0))
 
-;; this should be a let
 (defn get-content [document]
-  (list 
-   (doto (. document getContentStream)
-     (.getStream)
-     (.getFileName)
-     (.getMimeType)
-     (.getLength))))
+  (let [content (. document getContentStream)]
+    (list 
+     (. content getStream)
+     (. content getFileName) 
+     (. content getMimeType)
+     (. content getLength))))
+
+(defn get-renditions [document]
+  (. document getRenditions))
 
 (defn create-document-context-content [session]
   (doto (session/create-operation-context session)

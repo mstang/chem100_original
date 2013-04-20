@@ -131,4 +131,5 @@
 (. (session/get-object in-mem-session "310") getContentStreamLength)
 
 (doc/content? (session/get-object in-mem-session "310"))
-(doc/get-content (session/get-object in-mem-session "310"))
+(doc/get-content (session/get-object in-mem-session "123"))
+(doc/get-renditions (session/get-object in-mem-session "100"))
